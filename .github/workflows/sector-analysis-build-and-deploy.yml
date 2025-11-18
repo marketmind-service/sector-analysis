@@ -1,0 +1,57 @@
+name: Build and deploy sector analysis
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: marketmind-service/sector-analysis
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
+      packages: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push image to GHCR
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: ./Dockerfile
+          push: true
+          tags: |
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
+
+      - name: Azure Login
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.SECTORANALYSIS_AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.SECTORANALYSIS_AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.SECTORANALYSIS_AZURE_SUBSCRIPTION_ID }}
+
+      - name: Deploy container app
+        uses: azure/container-apps-deploy-action@v2
+        with:
+          containerAppName: sector-analysis
+          resourceGroup: group9
+          registryUrl: ghcr.io
+          registryUsername: ${{ secrets.SECTORANALYSIS_REGISTRY_USERNAME }}
+          registryPassword: ${{ secrets.SECTORANALYSIS_REGISTRY_PASSWORD }}
+          imageToDeploy: ghcr.io/marketmind-service/sector-analysis:${{ github.sha }}
