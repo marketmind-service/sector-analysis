@@ -50,7 +50,7 @@ jobs:
         uses: azure/container-apps-deploy-action@v2
         with:
           containerAppName: sector-analysis
-          resourceGroup: group9
+          resourceGroup: marketmind
           registryUrl: ghcr.io
           registryUsername: ${{ secrets.SECTORANALYSIS_REGISTRY_USERNAME }}
           registryPassword: ${{ secrets.SECTORANALYSIS_REGISTRY_PASSWORD }}
