@@ -213,8 +213,10 @@ def build_sector_dashboard(selected_etfs: Optional[List[str]] = None) -> pd.Data
 
 
 async def fetch_data(state: SectorState) -> SectorState:
+    print("fetch_data start")
     try:
         table_df = build_sector_dashboard(state.sectors)
+        print(f"fetch_data done")
         return state.model_copy(update={
             "raw_rows": table_df.to_dict(orient="records"),
             "error": None,

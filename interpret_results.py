@@ -6,6 +6,7 @@ from config import query2
 
 
 def format_raw_rows(raw_rows: List[Dict[str, Any]]) -> str:
+    print("format_raw_rows")
     lines: List[str] = []
     for row in raw_rows:
         etf = row.get("ETF")
@@ -24,6 +25,7 @@ def format_raw_rows(raw_rows: List[Dict[str, Any]]) -> str:
 
 
 async def structure_results(state: SectorState) -> SectorState:
+    print("structure_results")
     if not state.raw_rows:
         return state.model_copy(update={"error": "No raw_rows available for sector analysis"})
 
@@ -83,6 +85,8 @@ async def structure_results(state: SectorState) -> SectorState:
     if structured is None:
         return state.model_copy(update={"error": "Failed to parse structured sector analysis JSON"})
 
+    print("structured_results done")
+
     return state.model_copy(update={
         "structured_view": structured,
         "error": None,
@@ -90,6 +94,8 @@ async def structure_results(state: SectorState) -> SectorState:
 
 
 async def interpret_results(state: SectorState) -> SectorState:
+    print("interpret_results")
+
     if not state.raw_rows:
         return state.model_copy(update={"error": "No raw_rows available for commentary"})
     if not state.structured_view:
@@ -125,6 +131,8 @@ async def interpret_results(state: SectorState) -> SectorState:
 
     resp = await query2.ainvoke([system, user])
     interpreted_results = resp.content if isinstance(resp.content, str) else str(resp.content)
+
+    print("interpret_results done")
 
     return state.model_copy(update={
         "interpreted_results": interpreted_results,
