@@ -93,7 +93,11 @@ def scrub_basing(structured: Dict[str, Any], raw_rows: List[Dict[str, Any]]) -> 
             continue
         row = raw_map.get(etf, {})
         br = row.get("Breadth20")
-        br_val = br if isinstance(br, (int, float)) else 1.0
+        if isinstance(br, (int, float)):
+            br_val = br
+        else:
+            # treat missing or '-' breadth as garbage, not neutral
+            br_val = 0.0
         if br_val < 0.25:
             removed.append(etf)
         else:
