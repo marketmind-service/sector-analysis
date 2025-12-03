@@ -3,7 +3,7 @@ from typing import Any, Dict, List, Optional, cast
 from langchain_core.messages import SystemMessage, HumanMessage
 
 from state import SectorState
-from config import query2
+from config import query
 
 
 def classify_style(row: Dict[str, Any]) -> str:
@@ -149,7 +149,7 @@ async def structure_results(state: SectorState) -> SectorState:
         HumanMessage(content="User prompt:\n"f"{state.prompt or ''}\n\n""Sector table:\n"f"{table_text}")
     ]
 
-    resp = await query2.ainvoke(messages)
+    resp = await query.ainvoke(messages)
     raw = resp.content if isinstance(resp.content, str) else str(resp.content)
 
     import json
@@ -221,7 +221,7 @@ async def interpret_results(state: SectorState) -> SectorState:
         """).strip())
     ]
 
-    resp = await query2.ainvoke(messages)
+    resp = await query.ainvoke(messages)
     interpreted_results = resp.content if isinstance(resp.content, str) else str(resp.content)
 
     print("interpret_results done")
