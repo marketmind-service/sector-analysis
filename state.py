@@ -14,6 +14,7 @@ class AgentState(BaseModel):
 
 
 class SectorState(BaseModel):
+    source: Optional[str] = None
     prompt: Optional[str] = None
     sectors: Optional[List[str]] = None
     raw_rows: Optional[List[Dict[str, Any]]] = None

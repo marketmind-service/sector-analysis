@@ -14,3 +14,11 @@ async def sector_agent(parent: AgentState) -> AgentState:
 
     out_state = out_of_sector_state(parent, SectorState(**raw))
     return out_state
+
+async def sector_agent_direct(state: SectorState) -> SectorState:
+    raw = await create_sector_graph().ainvoke(
+        state,
+        config=cast(RunnableConfig, cast(object, {"recursion_limit": 100}))
+    )
+
+    return SectorState(**raw)

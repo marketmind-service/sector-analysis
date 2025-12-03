@@ -3,7 +3,8 @@ from state import AgentState, SectorState
 
 def into_sector_state(parent: AgentState, child: SectorState) -> SectorState:
     return child.model_copy(update={
-        "prompt": parent.prompt
+        "source": "agent",
+        "prompt": parent.prompt,
     })
 
 
